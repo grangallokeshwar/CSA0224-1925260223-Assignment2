@@ -1,0 +1,75 @@
+#include <stdio.h>
+
+int calls = 0;
+
+int verify_card(int passenger)
+{
+    calls++;
+    return passenger % 10 == 0;
+}
+
+int main(void)
+{
+    int senior, eligible;
+    int concession;
+    int i;
+
+    /* Order 1: Cheap conditions first */
+    calls = 0;
+
+    for (i = 1; i <= 1000; i++)
+    {
+        senior = (i % 4 == 0);
+        eligible = (i % 5 == 0);
+
+        concession = (senior && eligible) ||
+                     verify_card(i);
+    }
+
+    printf("Order 1: senior && eligible || verify_card\n");
+    printf("Verification calls = %d\n", calls);
+
+    /* Order 2: Slow verification first */
+    calls = 0;
+
+    for (i = 1; i <= 1000; i++)
+    {
+        senior = (i % 4 == 0);
+        eligible = (i % 5 == 0);
+
+        concession = verify_card(i) ||
+                     (senior && eligible);
+    }
+
+    printf("\nOrder 2: verify_card || senior && eligible\n");
+    printf("Verification calls = %d\n", calls);
+
+    /* Demonstrate short-circuit with && and || */
+    calls = 0;
+    if (0 && verify_card(1))
+        printf("AND condition true\n");
+    printf("\nCalls after 0 && function = %d\n", calls);
+
+    if (1 || verify_card(1))
+        printf("OR condition true\n");
+    printf("Calls after 1 || function = %d\n", calls);
+
+    return 0;
+}
+
+output expectations:
+
+$ gcc q2.c -Wall -Wextra -o q2
+$ ./q2
+
+Order 1: senior && eligible || verify_card
+Verification calls = 950
+Concessions granted = 100
+
+Order 2: verify_card || senior && eligible
+Verification calls = 1000
+Concessions granted = 100
+
+Calls after 0 && function = 0
+OR condition true
+Calls after 1 || function = 0
