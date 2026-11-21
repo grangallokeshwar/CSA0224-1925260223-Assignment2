@@ -1,0 +1,60 @@
+
+#include <stdio.h>
+
+#define AC    (1u << 2)
+#define PUMP  (1u << 0)
+#define LIGHT (1u << 1)
+
+void switch_on(unsigned char *status, unsigned char device)
+{
+    *status |= device;
+}
+
+void switch_off(unsigned char *status, unsigned char device)
+{
+    *status &= (unsigned char)~device;
+}
+
+void toggle(unsigned char *status, unsigned char device)
+{
+    *status ^= device;
+}
+
+int is_on(unsigned char status, unsigned char device)
+{
+    return (status & device) != 0;
+}
+
+void display_binary(unsigned char status)
+{
+    int bit;
+
+    for (bit = 7; bit >= 0; bit--)
+        printf("%d", (status >> bit) & 1u);
+
+    printf("\n");
+}
+
+int main(void)
+{
+    unsigned char status = 0;
+
+    switch_on(&status, AC);
+    switch_on(&status, PUMP);
+    display_binary(status);
+
+    switch_off(&status, PUMP);
+    switch_on(&status, LIGHT);
+    display_binary(status);
+
+    printf("AC is %s, PUMP is %s\n",
+           is_on(status, AC) ? "ON" : "OFF",
+           is_on(status, PUMP) ? "ON" : "OFF");
+
+    return 0;
+}
+
+Output expectation :
+00000101
+00000110
+AC is ON, PUMP is OFF
